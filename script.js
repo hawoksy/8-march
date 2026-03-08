@@ -36,37 +36,10 @@ if (flowers) {
     });
 }
 
-// ========== Галерея и лайтбокс ==========
-const lightbox = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightbox-img');
-const lightboxClose = document.getElementById('lightbox-close');
-const gallery = document.getElementById('gallery');
-
-if (gallery) {
-    gallery.addEventListener('click', (e) => {
-        const img = e.target.closest('.gallery-img');
-        if (!img) return;
-        e.preventDefault();
-        lightboxImg.src = img.src;
-        lightboxImg.alt = img.alt;
-        lightbox.classList.add('active');
-    });
-}
-
-if (lightboxClose) {
-    lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
-}
-
-if (lightbox) {
-    lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) lightbox.classList.remove('active');
-    });
-}
-
 // ========== Кнопка «Нажмите для сюрприза» ==========
 const btnSurprise = document.getElementById('btn-surprise');
 const surpriseMessage = document.getElementById('surprise-message');
-const SURPRISE_TEXT = 'Ты замечательная! Пусть этот день будет полон радости и цветов! 💐✨';
+const SURPRISE_TEXT = 'Спасибо за любовь, поддержку и всё добро, которое ты даришь нашей семье. Пусть этот день будет полон радости и тепла. ❤️';
 
 if (btnSurprise && surpriseMessage) {
     btnSurprise.addEventListener('click', () => {
@@ -76,15 +49,25 @@ if (btnSurprise && surpriseMessage) {
     });
 }
 
-// ========== Карточки мини-игр ==========
-document.querySelectorAll('.game-card').forEach(card => {
-    card.addEventListener('click', () => {
-        const game = card.dataset.game;
-        document.getElementById(`modal-${game}`).classList.add('active');
-        if (game === 'memory') initMemoryGame();
-        if (game === 'catch') initCatchGame();
-        if (game === 'quiz') initQuiz();
-    });
+// ========== Прогресс и переходы между играми ==========
+let gameProgress = 0;
+
+function openGameModal(gameId) {
+    const modal = document.getElementById('modal-' + gameId);
+    if (modal) modal.classList.add('active');
+    if (gameId === 'memory') initMemoryGame();
+    if (gameId === 'catch') initCatchGame();
+    if (gameId === 'quiz') initQuiz();
+}
+
+function closeGameModal(gameId) {
+    const modal = document.getElementById('modal-' + gameId);
+    if (modal) modal.classList.remove('active');
+}
+
+// ========== Мини-квест: кнопка «Начать» ==========
+document.getElementById('quest-start')?.addEventListener('click', () => {
+    openGameModal('memory');
 });
 
 // Close modal buttons
@@ -98,6 +81,32 @@ document.querySelectorAll('.close-btn').forEach(btn => {
     });
 });
 
+// Кнопки «Следующая игра» и «Начать заново»
+document.getElementById('memory-next')?.addEventListener('click', () => {
+    closeGameModal('memory');
+    gameProgress = 1;
+    openGameModal('catch');
+});
+
+document.getElementById('catch-next')?.addEventListener('click', () => {
+    closeGameModal('catch');
+    gameProgress = 2;
+    openGameModal('quiz');
+});
+
+document.getElementById('catch-retry')?.addEventListener('click', () => {
+    initCatchGame();
+});
+
+document.getElementById('quiz-restart')?.addEventListener('click', () => {
+    closeGameModal('quiz');
+    gameProgress = 0;
+});
+
+document.getElementById('quiz-retry-btn')?.addEventListener('click', () => {
+    initQuiz();
+});
+
 function closeModal(id) {
     document.getElementById(id).classList.remove('active');
     if (id === 'modal-catch') stopCatchGame();
@@ -109,10 +118,12 @@ const MEMORY_ICONS = ['🌸', '🌷', '🌺', '💐', '🌹', '💖', '✨', '�
 function initMemoryGame() {
     const grid = document.getElementById('memory-grid');
     const scoreEl = document.getElementById('memory-score');
-    const restartBtn = document.getElementById('memory-restart');
+    const playEl = document.getElementById('memory-play');
+    const winEl = document.getElementById('memory-win');
     if (!grid || !scoreEl) return;
 
-    if (restartBtn) restartBtn.style.display = 'none';
+    if (playEl) playEl.style.display = '';
+    if (winEl) winEl.style.display = 'none';
     grid.innerHTML = '';
     scoreEl.textContent = 'Ходов: 0';
 
@@ -169,8 +180,14 @@ function initMemoryGame() {
                     flipped = [];
                     if (matched === 12) {
                         gameOver = true;
-                        scoreEl.textContent = 'Поздравляю! За ' + moves + ' ходов 🎉';
-                        if (restartBtn) restartBtn.style.display = 'inline-block';
+                        createConfetti(10);
+                        if (playEl) playEl.style.display = 'none';
+                        if (winEl) {
+                            winEl.style.display = 'block';
+                            const movesEl = document.getElementById('memory-moves');
+                            if (movesEl) movesEl.textContent = 'За ' + moves + ' ходов';
+                            document.getElementById('memory-progress').textContent = 'Игра 1 из 3';
+                        }
                     }
                 } else {
                     flipBack();
@@ -183,9 +200,13 @@ function initMemoryGame() {
     });
 }
 
-document.getElementById('memory-restart')?.addEventListener('click', () => initMemoryGame());
-
 // ========== Игра «Лови сердечки» (корзинка) ==========
+const CATCH_TARGET = 51;
+const CATCH_LIVES = 3;
+
+function getLivesText(n) {
+    return 'Жизни: ' + '❤️'.repeat(n) + '🖤'.repeat(CATCH_LIVES - n);
+}
 let catchInterval = null;
 let catchRunning = false;
 let catchCollisionId = null;
@@ -194,9 +215,17 @@ function initCatchGame() {
     stopCatchGame();
     const scoreEl = document.getElementById('catch-score');
     const area = document.getElementById('catch-area');
+    const playEl = document.getElementById('catch-play');
+    const winEl = document.getElementById('catch-win');
     const btnStart = document.getElementById('catch-start');
     const btnStop = document.getElementById('catch-stop');
-    if (scoreEl) scoreEl.textContent = 'Счёт: 0';
+    const livesEl = document.getElementById('catch-lives');
+    const loseEl = document.getElementById('catch-lose');
+    if (scoreEl) scoreEl.textContent = 'Счёт: 0 / ' + CATCH_TARGET;
+    if (livesEl) livesEl.textContent = getLivesText(CATCH_LIVES);
+    if (playEl) playEl.style.display = '';
+    if (winEl) winEl.style.display = 'none';
+    if (loseEl) loseEl.style.display = 'none';
     if (area) {
         area.innerHTML = '';
         const ph = document.createElement('div');
@@ -258,8 +287,35 @@ function startCatchGame() {
     area.addEventListener('mousemove', onMove);
     area.addEventListener('touchmove', onMove, { passive: false });
 
-    scoreEl.textContent = 'Счёт: 0';
+    scoreEl.textContent = 'Счёт: 0 / ' + CATCH_TARGET;
+    const livesEl = document.getElementById('catch-lives');
     let score = 0;
+    let lives = CATCH_LIVES;
+    const playEl = document.getElementById('catch-play');
+    const winEl = document.getElementById('catch-win');
+    const loseEl = document.getElementById('catch-lose');
+
+    function updateLives() {
+        if (livesEl) livesEl.textContent = getLivesText(lives);
+    }
+
+    function checkCatchWin() {
+        if (score >= CATCH_TARGET && winEl && playEl) {
+            stopCatchGame();
+            createConfetti(12);
+            playEl.style.display = 'none';
+            winEl.style.display = 'block';
+            document.getElementById('catch-progress').textContent = 'Игра 2 из 3';
+        }
+    }
+
+    function checkCatchLose() {
+        if (lives <= 0 && loseEl && playEl) {
+            stopCatchGame();
+            playEl.style.display = 'none';
+            loseEl.style.display = 'block';
+        }
+    }
 
     function checkCollisions() {
         if (!catchRunning || !basket.parentNode) return;
@@ -269,10 +325,12 @@ function startCatchGame() {
             if (heart.classList.contains('caught')) return;
             const heartRect = heart.getBoundingClientRect();
             if (rectsOverlap(basketRect, heartRect)) {
-                heart.classList.add('caught');
-                score += 1;
-                scoreEl.textContent = 'Счёт: ' + score;
-                setTimeout(() => heart.remove(), 320);
+            heart.classList.add('caught');
+            score += 1;
+            scoreEl.textContent = 'Счёт: ' + score + ' / ' + CATCH_TARGET;
+            setTimeout(() => heart.remove(), 320);
+            checkCatchWin();
+            return;
             }
         });
         catchCollisionId = requestAnimationFrame(checkCollisions);
@@ -288,7 +346,13 @@ function startCatchGame() {
         heart.style.animation = `heartFall ${duration}s linear forwards`;
         area.appendChild(heart);
         setTimeout(() => {
-            if (heart.parentNode && !heart.classList.contains('caught')) heart.remove();
+            if (!catchRunning) return;
+            if (heart.parentNode && !heart.classList.contains('caught')) {
+                heart.remove();
+                lives -= 1;
+                updateLives();
+                checkCatchLose();
+            }
         }, duration * 1000 + 200);
     }, 800);
 
@@ -324,12 +388,29 @@ if (catchStartBtn) catchStartBtn.addEventListener('click', startCatchGame);
 if (catchStopBtn) catchStopBtn.addEventListener('click', stopCatchGame);
 
 // ========== Викторина ==========
+function shuffleArray(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
 const QUIZ = [
-    { q: 'Какой цветок называют символом 8 марта?', options: ['Роза', 'Тюльпан', 'Мимоза', 'Ландыш'], correct: 2 },
-    { q: 'Какого цвета традиционная мимоза?', options: ['Белая', 'Жёлтая', 'Розовая', 'Красная'], correct: 1 },
-    { q: 'Какой цветок олицетворяет любовь?', options: ['Ромашка', 'Роза', 'Тюльпан', 'Пион'], correct: 1 },
-    { q: 'Сколько лепестков у цветка сакуры?', options: ['3', '5', '7', '9'], correct: 1 },
+    { q: 'Что чаще всего дарят маме на 8 марта?', options: ['Цветы', 'Игрушки', 'Одежду', 'Книгу'], correctAnswer: 'Цветы' },
+    { q: 'Какой цвет чаще всего ассоциируют с Международным женским днём?', options: ['Розовый', 'Чёрный', 'Синий', 'Зелёный'], correctAnswer: 'Розовый' },
+    { q: 'Что чаще всего весной цветёт первым в саду?', options: ['Подснежники', 'Розы', 'Тюльпаны', 'Орхидеи'], correctAnswer: 'Подснежники' },
+    { q: 'Что обычно кладут в подарок на 8 марта кроме цветов?', options: ['Шоколад и сладости', 'Песок', 'Книгу по химии', 'Карандаши'], correctAnswer: 'Шоколад и сладости' },
+    { q: 'Какие эмоции мы хотим подарить с 8 марта?', options: ['Радость и любовь', 'Грусть', 'Страх', 'Злость'], correctAnswer: 'Радость и любовь' },
+    { q: 'Какой цветок называют символом 8 марта?', options: ['Роза', 'Тюльпан', 'Мимоза', 'Ландыш'], correctAnswer: 'Мимоза' },
+    { q: 'Какого цвета традиционная мимоза?', options: ['Белая', 'Жёлтая', 'Розовая', 'Красная'], correctAnswer: 'Жёлтая' },
+    { q: 'Какой цветок олицетворяет любовь?', options: ['Ромашка', 'Роза', 'Тюльпан', 'Пион'], correctAnswer: 'Роза' },
+    { q: 'Какой цветок в Японии считается символом весны и красоты?', options: ['Сакура', 'Роза', 'Тюльпан', 'Лилия'], correctAnswer: 'Сакура' },
+    { q: 'Сколько лепестков у цветка сакуры?', options: ['3', '5', '7', '9'], correctAnswer: '5' },
 ];
+
+const QUIZ_PASS_SCORE = 8;
 
 let quizIndex = 0;
 let quizCorrect = 0;
@@ -337,15 +418,19 @@ let quizCorrect = 0;
 function initQuiz() {
     quizIndex = 0;
     quizCorrect = 0;
+    const playEl = document.getElementById('quiz-play');
+    const finalEl = document.getElementById('quiz-final');
+    const retryEl = document.getElementById('quiz-retry');
     const resultEl = document.getElementById('quiz-result');
-    const contentEl = document.getElementById('quiz-content');
     const progressEl = document.getElementById('quiz-progress');
+    if (playEl) playEl.style.display = '';
+    if (finalEl) finalEl.style.display = 'none';
+    if (retryEl) retryEl.style.display = 'none';
     if (resultEl) {
         resultEl.style.display = 'none';
         resultEl.textContent = '';
         resultEl.className = 'quiz-result';
     }
-    if (contentEl) contentEl.style.display = 'block';
     if (progressEl) progressEl.textContent = '';
     showQuizQuestion();
 }
@@ -359,23 +444,36 @@ function showQuizQuestion() {
     if (!questionEl || !optsEl) return;
 
     if (quizIndex >= QUIZ.length) {
-        if (contentEl) contentEl.style.display = 'none';
-        if (resultEl) {
-            resultEl.style.display = 'block';
-            const pct = Math.round((quizCorrect / QUIZ.length) * 100);
-            resultEl.innerHTML = '<span class="quiz-result-title">Готово!</span><span class="quiz-result-score">' + quizCorrect + ' из ' + QUIZ.length + '</span><span class="quiz-result-msg">' + (quizCorrect === QUIZ.length ? 'Все верно! 🎉' : 'Спасибо за игру 💐') + '</span>';
-            if (pct === 100) resultEl.classList.add('quiz-result-perfect');
+        const playEl = document.getElementById('quiz-play');
+        const finalEl = document.getElementById('quiz-final');
+        const retryEl = document.getElementById('quiz-retry');
+        const retryScoreEl = document.getElementById('quiz-retry-score');
+        if (playEl) playEl.style.display = 'none';
+        if (quizCorrect >= QUIZ_PASS_SCORE && finalEl) {
+            finalEl.style.display = 'block';
+            const introEl = document.getElementById('quiz-final-intro');
+            if (introEl) {
+                const n = quizCorrect;
+                const word = (n % 10 === 1 && n % 100 !== 11) ? 'вопрос' : ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) ? 'вопроса' : 'вопросов';
+                introEl.textContent = '🌷 Вы ответили правильно на ' + n + ' ' + word + '! Пусть ваша жизнь расцветает, как самый красивый весенний сад, и каждый день дарит радость и улыбки.';
+            }
+            createConfetti(15);
+        } else if (retryEl && retryScoreEl) {
+            retryEl.style.display = 'block';
+            retryScoreEl.textContent = 'Результат: ' + quizCorrect + ' из ' + QUIZ.length;
         }
-        if (quizCorrect === QUIZ.length) createConfetti(5);
         return;
     }
 
     const q = QUIZ[quizIndex];
+    const shuffledOptions = shuffleArray(q.options);
+    const correctIndex = shuffledOptions.indexOf(q.correctAnswer);
+
     if (progressEl) progressEl.textContent = 'Вопрос ' + (quizIndex + 1) + ' из ' + QUIZ.length;
     questionEl.textContent = q.q;
     optsEl.innerHTML = '';
 
-    q.options.forEach((opt, i) => {
+    shuffledOptions.forEach((opt, i) => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'quiz-option';
@@ -383,13 +481,12 @@ function showQuizQuestion() {
         btn.addEventListener('click', () => {
             const options = optsEl.querySelectorAll('.quiz-option');
             options.forEach(b => { b.disabled = true; });
-            const isCorrect = i === q.correct;
+            const isCorrect = i === correctIndex;
             if (isCorrect) {
                 btn.classList.add('correct');
                 quizCorrect++;
             } else {
                 btn.classList.add('wrong');
-                options[q.correct].classList.add('correct');
             }
             setTimeout(() => {
                 quizIndex++;
