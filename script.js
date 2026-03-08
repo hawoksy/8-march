@@ -225,6 +225,7 @@ function startCatchGame() {
     if (btnStop) btnStop.disabled = false;
     const placeholder = area.querySelector('.catch-placeholder');
     if (placeholder) placeholder.remove();
+    area.classList.add('catch-area-active');
 
     const basket = document.createElement('div');
     basket.className = 'catch-basket';
@@ -246,12 +247,16 @@ function startCatchGame() {
     }
 
     function onMove(e) {
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        setBasketPosition(clientX);
+        if (e.touches) {
+            e.preventDefault();
+            setBasketPosition(e.touches[0].clientX);
+        } else {
+            setBasketPosition(e.clientX);
+        }
     }
 
     area.addEventListener('mousemove', onMove);
-    area.addEventListener('touchmove', onMove, { passive: true });
+    area.addEventListener('touchmove', onMove, { passive: false });
 
     scoreEl.textContent = 'Счёт: 0';
     let score = 0;
@@ -288,6 +293,7 @@ function startCatchGame() {
     }, 800);
 
     window._catchCleanup = function() {
+        area.classList.remove('catch-area-active');
         area.removeEventListener('mousemove', onMove);
         area.removeEventListener('touchmove', onMove);
         if (catchCollisionId) cancelAnimationFrame(catchCollisionId);
