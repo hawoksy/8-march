@@ -1,12 +1,18 @@
-// Flower click confetti
-const flowers = document.getElementById('flowers');
-const emojis = ['🌸', '🌷', '💕', '✨', '🌺', '💖'];
+// ========== Экран приветствия ==========
+const welcomeScreen = document.getElementById('welcome-screen');
+const mainContent = document.getElementById('main-content');
+const btnOpen = document.getElementById('btn-open');
 
-flowers.querySelectorAll('.flower-emoji').forEach((el) => {
-    el.addEventListener('click', () => {
-        createConfetti(5);
+if (btnOpen) {
+    btnOpen.addEventListener('click', () => {
+        welcomeScreen.classList.add('hidden');
+        mainContent.classList.add('visible');
+        mainContent.setAttribute('aria-hidden', 'false');
     });
-});
+}
+
+// ========== Конфетти (общая функция) ==========
+const emojis = ['🌸', '🌷', '💕', '✨', '🌺', '💖'];
 
 function createConfetti(count) {
     for (let i = 0; i < count; i++) {
@@ -22,7 +28,55 @@ function createConfetti(count) {
     }
 }
 
-// Game cards click
+// Клик по цветам в шапке
+const flowers = document.getElementById('flowers');
+if (flowers) {
+    flowers.querySelectorAll('.flower-emoji').forEach((el) => {
+        el.addEventListener('click', () => createConfetti(5));
+    });
+}
+
+// ========== Галерея и лайтбокс ==========
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxClose = document.getElementById('lightbox-close');
+const gallery = document.getElementById('gallery');
+
+if (gallery) {
+    gallery.addEventListener('click', (e) => {
+        const img = e.target.closest('.gallery-img');
+        if (!img) return;
+        e.preventDefault();
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        lightbox.classList.add('active');
+    });
+}
+
+if (lightboxClose) {
+    lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
+}
+
+if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) lightbox.classList.remove('active');
+    });
+}
+
+// ========== Кнопка «Нажмите для сюрприза» ==========
+const btnSurprise = document.getElementById('btn-surprise');
+const surpriseMessage = document.getElementById('surprise-message');
+const SURPRISE_TEXT = 'Ты замечательная! Пусть этот день будет полон радости и цветов! 💐✨';
+
+if (btnSurprise && surpriseMessage) {
+    btnSurprise.addEventListener('click', () => {
+        surpriseMessage.textContent = SURPRISE_TEXT;
+        surpriseMessage.classList.add('visible');
+        createConfetti(15);
+    });
+}
+
+// ========== Карточки мини-игр ==========
 document.querySelectorAll('.game-card').forEach(card => {
     card.addEventListener('click', () => {
         const game = card.dataset.game;
@@ -49,13 +103,18 @@ function closeModal(id) {
     if (id === 'modal-catch') stopCatchGame();
 }
 
-// Memory Game
+// ========== Игра «Найди пару» ==========
 const MEMORY_ICONS = ['🌸', '🌷', '🌺', '💐', '🌹', '💖', '✨', '🦋'];
 
 function initMemoryGame() {
     const grid = document.getElementById('memory-grid');
     const scoreEl = document.getElementById('memory-score');
+    const restartBtn = document.getElementById('memory-restart');
+    if (!grid || !scoreEl) return;
+
+    if (restartBtn) restartBtn.style.display = 'none';
     grid.innerHTML = '';
+    scoreEl.textContent = 'Ходов: 0';
 
     const pairs = [...MEMORY_ICONS.slice(0, 6), ...MEMORY_ICONS.slice(0, 6)]
         .sort(() => Math.random() - 0.5);
@@ -63,23 +122,43 @@ function initMemoryGame() {
     let moves = 0;
     let flipped = [];
     let matched = 0;
+    let locked = false;
+    let gameOver = false;
+
+    function flipBack() {
+        locked = true;
+        const toFlip = [...flipped];
+        toFlip.forEach(f => f.el.classList.add('wrong'));
+        flipped = [];
+        setTimeout(() => {
+            toFlip.forEach(f => {
+                f.el.classList.remove('flipped', 'wrong');
+                f.el.innerHTML = '<span class="back">?</span>';
+            });
+            locked = false;
+        }, 900);
+    }
 
     pairs.forEach((icon, i) => {
         const card = document.createElement('div');
         card.className = 'memory-card';
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
         card.dataset.index = i;
         card.dataset.icon = icon;
-        card.innerHTML = `<span class="back">❓</span>`;
-        card.addEventListener('click', () => {
-            if (flipped.length === 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+        card.innerHTML = '<span class="back">?</span>';
+        function handleClick(e) {
+            if (e) e.preventDefault();
+            if (locked || gameOver || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+            if (flipped.length >= 2) return;
 
             card.classList.add('flipped');
-            card.innerHTML = icon;
+            card.innerHTML = '<span class="front">' + icon + '</span>';
             flipped.push({ el: card, icon });
-            moves++;
-            scoreEl.textContent = `Ходов: ${moves}`;
 
             if (flipped.length === 2) {
+                moves++;
+                scoreEl.textContent = 'Ходов: ' + moves;
                 if (flipped[0].icon === flipped[1].icon) {
                     flipped.forEach(f => {
                         f.el.classList.add('matched');
@@ -87,78 +166,112 @@ function initMemoryGame() {
                     });
                     matched += 2;
                     createConfetti(3);
+                    flipped = [];
                     if (matched === 12) {
-                        setTimeout(() => {
-                            scoreEl.textContent = `Поздравляю! Игра окончена за ${moves} ходов! 🎉`;
-                        }, 300);
+                        gameOver = true;
+                        scoreEl.textContent = 'Поздравляю! За ' + moves + ' ходов 🎉';
+                        if (restartBtn) restartBtn.style.display = 'inline-block';
                     }
                 } else {
-                    setTimeout(() => {
-                        flipped.forEach(f => {
-                            f.el.classList.remove('flipped');
-                            f.el.innerHTML = `<span class="back">❓</span>`;
-                        });
-                    }, 600);
+                    flipBack();
                 }
-                flipped = [];
             }
-        });
+        }
+        card.addEventListener('click', handleClick);
+        card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') handleClick(e); });
         grid.appendChild(card);
     });
 }
 
-// Catch Hearts Game
-let catchInterval;
+document.getElementById('memory-restart')?.addEventListener('click', () => initMemoryGame());
+
+// ========== Игра «Лови сердечки» ==========
+let catchInterval = null;
 let catchRunning = false;
 
 function initCatchGame() {
-    document.getElementById('catch-score').textContent = 'Счёт: 0';
-    document.getElementById('catch-area').innerHTML = '';
-    document.getElementById('catch-start').disabled = false;
-    document.getElementById('catch-stop').disabled = true;
+    stopCatchGame();
+    const scoreEl = document.getElementById('catch-score');
+    const area = document.getElementById('catch-area');
+    const placeholder = document.getElementById('catch-placeholder');
+    const btnStart = document.getElementById('catch-start');
+    const btnStop = document.getElementById('catch-stop');
+    if (scoreEl) scoreEl.textContent = 'Счёт: 0';
+    if (area) {
+        area.innerHTML = '';
+        const ph = document.createElement('div');
+        ph.className = 'catch-placeholder';
+        ph.id = 'catch-placeholder';
+        ph.textContent = 'Нажмите «Начать»';
+        area.appendChild(ph);
+    }
+    if (btnStart) btnStart.disabled = false;
+    if (btnStop) btnStop.disabled = true;
 }
 
-document.getElementById('catch-start').addEventListener('click', () => {
-    if (catchRunning) return;
+function startCatchGame() {
+    const area = document.getElementById('catch-area');
+    const scoreEl = document.getElementById('catch-score');
+    const btnStart = document.getElementById('catch-start');
+    const btnStop = document.getElementById('catch-stop');
+    if (!area || !scoreEl || catchRunning) return;
+
     catchRunning = true;
-    document.getElementById('catch-start').disabled = true;
-    document.getElementById('catch-stop').disabled = false;
-    document.getElementById('catch-area').innerHTML = '';
-    document.getElementById('catch-score').textContent = 'Счёт: 0';
+    if (btnStart) btnStart.disabled = true;
+    if (btnStop) btnStop.disabled = false;
+    const placeholder = area.querySelector('.catch-placeholder');
+    if (placeholder) placeholder.remove();
+    scoreEl.textContent = 'Счёт: 0';
+    let score = 0;
 
     catchInterval = setInterval(() => {
         const heart = document.createElement('div');
         heart.className = 'heart-fall';
+        heart.setAttribute('role', 'button');
+        heart.setAttribute('tabindex', '0');
         heart.textContent = ['💕', '❤️', '💗', '💖', '💘'][Math.floor(Math.random() * 5)];
-        heart.style.left = Math.random() * (100 - 10) + '%';
-        heart.style.animationDuration = (2 + Math.random() * 2) + 's';
+        const duration = 2.2 + Math.random() * 1.8;
+        heart.style.left = (5 + Math.random() * 85) + '%';
+        heart.style.animation = `heartFall ${duration}s linear forwards`;
 
-        heart.addEventListener('click', (e) => {
+        function catchHeart(e) {
+            if (heart.classList.contains('caught')) return;
+            e.preventDefault();
             e.stopPropagation();
             heart.classList.add('caught');
-            const catchScoreEl = document.getElementById('catch-score');
-            const current = parseInt(catchScoreEl.textContent.replace(/\D/g, ''), 10) || 0;
-            catchScoreEl.textContent = `Счёт: ${current + 1}`;
-            setTimeout(() => heart.remove(), 300);
-        });
+            score += 1;
+            scoreEl.textContent = 'Счёт: ' + score;
+            setTimeout(() => heart.remove(), 280);
+        }
 
-        document.getElementById('catch-area').appendChild(heart);
+        heart.addEventListener('click', catchHeart);
+        heart.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') catchHeart(e); });
+
+        area.appendChild(heart);
         setTimeout(() => {
             if (heart.parentNode && !heart.classList.contains('caught')) heart.remove();
-        }, 4000);
-    }, 600);
-});
-
-document.getElementById('catch-stop').addEventListener('click', stopCatchGame);
+        }, duration * 1000 + 100);
+    }, 700);
+}
 
 function stopCatchGame() {
     catchRunning = false;
-    clearInterval(catchInterval);
-    document.getElementById('catch-start').disabled = false;
-    document.getElementById('catch-stop').disabled = true;
+    if (catchInterval) {
+        clearInterval(catchInterval);
+        catchInterval = null;
+    }
+    const btnStart = document.getElementById('catch-start');
+    const btnStop = document.getElementById('catch-stop');
+    if (btnStart) btnStart.disabled = false;
+    if (btnStop) btnStop.disabled = true;
 }
 
-// Quiz
+const catchStartBtn = document.getElementById('catch-start');
+const catchStopBtn = document.getElementById('catch-stop');
+if (catchStartBtn) catchStartBtn.addEventListener('click', startCatchGame);
+if (catchStopBtn) catchStopBtn.addEventListener('click', stopCatchGame);
+
+// ========== Викторина ==========
 const QUIZ = [
     { q: 'Какой цветок называют символом 8 марта?', options: ['Роза', 'Тюльпан', 'Мимоза', 'Ландыш'], correct: 2 },
     { q: 'Какого цвета традиционная мимоза?', options: ['Белая', 'Жёлтая', 'Розовая', 'Красная'], correct: 1 },
@@ -172,39 +285,65 @@ let quizCorrect = 0;
 function initQuiz() {
     quizIndex = 0;
     quizCorrect = 0;
-    document.getElementById('quiz-result').style.display = 'none';
-    document.getElementById('quiz-content').style.display = 'block';
+    const resultEl = document.getElementById('quiz-result');
+    const contentEl = document.getElementById('quiz-content');
+    const progressEl = document.getElementById('quiz-progress');
+    if (resultEl) {
+        resultEl.style.display = 'none';
+        resultEl.textContent = '';
+        resultEl.className = 'quiz-result';
+    }
+    if (contentEl) contentEl.style.display = 'block';
+    if (progressEl) progressEl.textContent = '';
     showQuizQuestion();
 }
 
 function showQuizQuestion() {
+    const questionEl = document.getElementById('quiz-question');
+    const optsEl = document.getElementById('quiz-options');
+    const resultEl = document.getElementById('quiz-result');
+    const contentEl = document.getElementById('quiz-content');
+    const progressEl = document.getElementById('quiz-progress');
+    if (!questionEl || !optsEl) return;
+
     if (quizIndex >= QUIZ.length) {
-        document.getElementById('quiz-content').style.display = 'none';
-        const result = document.getElementById('quiz-result');
-        result.style.display = 'block';
-        result.textContent = `Результат: ${quizCorrect}/${QUIZ.length} 🎉`;
+        if (contentEl) contentEl.style.display = 'none';
+        if (resultEl) {
+            resultEl.style.display = 'block';
+            const pct = Math.round((quizCorrect / QUIZ.length) * 100);
+            resultEl.innerHTML = '<span class="quiz-result-title">Готово!</span><span class="quiz-result-score">' + quizCorrect + ' из ' + QUIZ.length + '</span><span class="quiz-result-msg">' + (quizCorrect === QUIZ.length ? 'Все верно! 🎉' : 'Спасибо за игру 💐') + '</span>';
+            if (pct === 100) resultEl.classList.add('quiz-result-perfect');
+        }
         if (quizCorrect === QUIZ.length) createConfetti(5);
         return;
     }
+
     const q = QUIZ[quizIndex];
-    document.getElementById('quiz-question').textContent = q.q;
-    const opts = document.getElementById('quiz-options');
-    opts.innerHTML = '';
+    if (progressEl) progressEl.textContent = 'Вопрос ' + (quizIndex + 1) + ' из ' + QUIZ.length;
+    questionEl.textContent = q.q;
+    optsEl.innerHTML = '';
+
     q.options.forEach((opt, i) => {
         const btn = document.createElement('button');
+        btn.type = 'button';
         btn.className = 'quiz-option';
         btn.textContent = opt;
         btn.addEventListener('click', () => {
-            opts.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
-            if (i === q.correct) {
+            const options = optsEl.querySelectorAll('.quiz-option');
+            options.forEach(b => { b.disabled = true; });
+            const isCorrect = i === q.correct;
+            if (isCorrect) {
                 btn.classList.add('correct');
                 quizCorrect++;
-            } else btn.classList.add('wrong');
+            } else {
+                btn.classList.add('wrong');
+                options[q.correct].classList.add('correct');
+            }
             setTimeout(() => {
                 quizIndex++;
                 showQuizQuestion();
-            }, 800);
+            }, 1400);
         });
-        opts.appendChild(btn);
+        optsEl.appendChild(btn);
     });
 }
