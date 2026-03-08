@@ -185,15 +185,15 @@ function initMemoryGame() {
 
 document.getElementById('memory-restart')?.addEventListener('click', () => initMemoryGame());
 
-// ========== Игра «Лови сердечки» ==========
+// ========== Игра «Лови сердечки» (корзинка) ==========
 let catchInterval = null;
 let catchRunning = false;
+let catchCollisionId = null;
 
 function initCatchGame() {
     stopCatchGame();
     const scoreEl = document.getElementById('catch-score');
     const area = document.getElementById('catch-area');
-    const placeholder = document.getElementById('catch-placeholder');
     const btnStart = document.getElementById('catch-start');
     const btnStop = document.getElementById('catch-stop');
     if (scoreEl) scoreEl.textContent = 'Счёт: 0';
@@ -209,6 +209,10 @@ function initCatchGame() {
     if (btnStop) btnStop.disabled = true;
 }
 
+function rectsOverlap(a, b) {
+    return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+}
+
 function startCatchGame() {
     const area = document.getElementById('catch-area');
     const scoreEl = document.getElementById('catch-score');
@@ -221,41 +225,83 @@ function startCatchGame() {
     if (btnStop) btnStop.disabled = false;
     const placeholder = area.querySelector('.catch-placeholder');
     if (placeholder) placeholder.remove();
+
+    const basket = document.createElement('div');
+    basket.className = 'catch-basket';
+    basket.setAttribute('aria-hidden', 'true');
+    basket.innerHTML = '🧺';
+    area.appendChild(basket);
+
+    const basketWidth = 80;
+    const basketHeight = 44;
+    let basketLeft = 50;
+    const areaRect = () => area.getBoundingClientRect();
+
+    function setBasketPosition(clientX) {
+        const rect = areaRect();
+        const x = clientX - rect.left;
+        const pct = (x / rect.width) * 100;
+        basketLeft = Math.max(5, Math.min(95, pct));
+        basket.style.left = basketLeft + '%';
+    }
+
+    function onMove(e) {
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        setBasketPosition(clientX);
+    }
+
+    area.addEventListener('mousemove', onMove);
+    area.addEventListener('touchmove', onMove, { passive: true });
+
     scoreEl.textContent = 'Счёт: 0';
     let score = 0;
+
+    function checkCollisions() {
+        if (!catchRunning || !basket.parentNode) return;
+        const basketRect = basket.getBoundingClientRect();
+        const hearts = area.querySelectorAll('.heart-fall:not(.caught)');
+        hearts.forEach((heart) => {
+            if (heart.classList.contains('caught')) return;
+            const heartRect = heart.getBoundingClientRect();
+            if (rectsOverlap(basketRect, heartRect)) {
+                heart.classList.add('caught');
+                score += 1;
+                scoreEl.textContent = 'Счёт: ' + score;
+                setTimeout(() => heart.remove(), 320);
+            }
+        });
+        catchCollisionId = requestAnimationFrame(checkCollisions);
+    }
+    catchCollisionId = requestAnimationFrame(checkCollisions);
 
     catchInterval = setInterval(() => {
         const heart = document.createElement('div');
         heart.className = 'heart-fall';
-        heart.setAttribute('role', 'button');
-        heart.setAttribute('tabindex', '0');
         heart.textContent = ['💕', '❤️', '💗', '💖', '💘'][Math.floor(Math.random() * 5)];
-        const duration = 2.2 + Math.random() * 1.8;
-        heart.style.left = (5 + Math.random() * 85) + '%';
+        const duration = 2.5 + Math.random() * 1.5;
+        heart.style.left = (8 + Math.random() * 84) + '%';
         heart.style.animation = `heartFall ${duration}s linear forwards`;
-
-        function catchHeart(e) {
-            if (heart.classList.contains('caught')) return;
-            e.preventDefault();
-            e.stopPropagation();
-            heart.classList.add('caught');
-            score += 1;
-            scoreEl.textContent = 'Счёт: ' + score;
-            setTimeout(() => heart.remove(), 280);
-        }
-
-        heart.addEventListener('click', catchHeart);
-        heart.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') catchHeart(e); });
-
         area.appendChild(heart);
         setTimeout(() => {
             if (heart.parentNode && !heart.classList.contains('caught')) heart.remove();
-        }, duration * 1000 + 100);
-    }, 700);
+        }, duration * 1000 + 200);
+    }, 800);
+
+    window._catchCleanup = function() {
+        area.removeEventListener('mousemove', onMove);
+        area.removeEventListener('touchmove', onMove);
+        if (catchCollisionId) cancelAnimationFrame(catchCollisionId);
+        catchCollisionId = null;
+        basket.remove();
+    };
 }
 
 function stopCatchGame() {
     catchRunning = false;
+    if (typeof window._catchCleanup === 'function') {
+        window._catchCleanup();
+        window._catchCleanup = null;
+    }
     if (catchInterval) {
         clearInterval(catchInterval);
         catchInterval = null;
