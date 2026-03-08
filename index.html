@@ -12,6 +12,15 @@
 <body>
     <div class="bg-pattern"></div>
 
+    <!-- Экран приветствия -->
+    <section class="welcome-screen" id="welcome-screen">
+        <h1 class="welcome-title">С 8 марта!</h1>
+        <p class="welcome-subtitle">Международный женский день</p>
+        <button type="button" class="btn btn-primary btn-open" id="btn-open">Открыть поздравление</button>
+    </section>
+
+    <!-- Основной контент (появляется после нажатия кнопки) -->
+    <main class="main-content" id="main-content" aria-hidden="true">
     <div class="container">
         <header class="header">
             <h1>С 8 марта!</h1>
@@ -25,11 +34,27 @@
             </div>
         </header>
 
-        <div class="poetry-card">
+        <div class="poetry-card poetry-card-visible">
             <p>Пусть весна принесёт тебе счастье,<br>
             Улыбки, любовь и теплоту.<br>
             Пусть сбудутся все твои мечты<br>
             В этот светлый день — 8 марта! ✨</p>
+        </div>
+
+        <!-- Галерея -->
+        <h2 class="section-title">Галерея</h2>
+        <div class="gallery" id="gallery">
+            <img src="https://picsum.photos/id/1/400/300" alt="Цветы 1" class="gallery-img">
+            <img src="https://picsum.photos/id/10/400/300" alt="Цветы 2" class="gallery-img">
+            <img src="https://picsum.photos/id/100/400/300" alt="Цветы 3" class="gallery-img">
+            <img src="https://picsum.photos/id/101/400/300" alt="Цветы 4" class="gallery-img">
+            <img src="https://picsum.photos/id/102/400/300" alt="Цветы 5" class="gallery-img">
+        </div>
+
+        <!-- Кнопка сюрприза -->
+        <div class="surprise-wrap">
+            <button type="button" class="btn btn-primary btn-surprise" id="btn-surprise">Нажмите здесь!</button>
+            <p class="surprise-message" id="surprise-message" aria-live="polite"></p>
         </div>
 
         <h2 class="section-title">Мини-игры</h2>
@@ -52,47 +77,65 @@
         </div>
 
         <footer class="footer">
-            Сделано с любовью 💖 · 8 марта 2025
+            С любовью, Ислам.
         </footer>
+    </div>
+    </main>
+
+    <!-- Лайтбокс галереи -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Увеличенное фото">
+        <button type="button" class="lightbox-close" id="lightbox-close">×</button>
+        <img src="" alt="" class="lightbox-img" id="lightbox-img">
     </div>
 
     <!-- Memory Game Modal -->
     <div class="modal-overlay" id="modal-memory">
-        <div class="modal-content">
+        <div class="modal-content modal-content-game">
             <div class="modal-header">
                 <h2>🧠 Найди пару</h2>
-                <button class="close-btn" type="button">×</button>
+                <button class="close-btn" type="button" aria-label="Закрыть">×</button>
             </div>
-            <div class="memory-score" id="memory-score">Ходов: 0</div>
+            <p class="game-instruction">Откройте две карточки. Если символы совпадут — пара найдена. Найдите все пары за меньше ходов.</p>
+            <div class="memory-score-wrap">
+                <span class="memory-score" id="memory-score">Ходов: 0</span>
+                <button type="button" class="btn btn-secondary btn-memory-restart" id="memory-restart" style="display:none;">Играть снова</button>
+            </div>
             <div class="memory-grid" id="memory-grid"></div>
         </div>
     </div>
 
     <!-- Catch Game Modal -->
     <div class="modal-overlay" id="modal-catch">
-        <div class="modal-content">
+        <div class="modal-content modal-content-game">
             <div class="modal-header">
                 <h2>💕 Лови сердечки</h2>
-                <button class="close-btn" type="button">×</button>
+                <button class="close-btn" type="button" aria-label="Закрыть">×</button>
             </div>
-            <div class="catch-score" id="catch-score">Счёт: 0</div>
+            <p class="game-instruction">Нажмите «Начать» и нажимайте на падающие сердечки — каждое пойманное приносит очко.</p>
+            <div class="catch-score-wrap">
+                <span class="catch-score" id="catch-score">Счёт: 0</span>
+            </div>
             <div class="catch-game">
-                <div class="catch-area" id="catch-area"></div>
+                <div class="catch-area" id="catch-area">
+                    <div class="catch-placeholder" id="catch-placeholder">Нажмите «Начать»</div>
+                </div>
             </div>
             <div class="catch-controls">
                 <button class="btn btn-primary" id="catch-start">Начать</button>
-                <button class="btn btn-primary" id="catch-stop" disabled>Стоп</button>
+                <button class="btn btn-primary btn-stop" id="catch-stop" disabled>Стоп</button>
             </div>
         </div>
     </div>
 
     <!-- Quiz Modal -->
     <div class="modal-overlay" id="modal-quiz">
-        <div class="modal-content">
+        <div class="modal-content modal-content-game">
             <div class="modal-header">
                 <h2>❓ Викторина о цветах</h2>
-                <button class="close-btn" type="button">×</button>
+                <button class="close-btn" type="button" aria-label="Закрыть">×</button>
             </div>
+            <p class="game-instruction">Выберите один ответ на каждый вопрос. Зелёный — верно, красный — неверно.</p>
+            <div class="quiz-progress" id="quiz-progress"></div>
             <div id="quiz-content">
                 <div class="quiz-question" id="quiz-question"></div>
                 <div id="quiz-options"></div>
