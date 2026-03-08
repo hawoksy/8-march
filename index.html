@@ -6,7 +6,7 @@
     <title>С 8 марта! 🌸</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -21,72 +21,46 @@
 
     <!-- Основной контент (появляется после нажатия кнопки) -->
     <main class="main-content" id="main-content" aria-hidden="true">
-    <div class="container">
-        <header class="header">
-            <h1>С 8 марта!</h1>
-            <p class="subtitle">Поздравляю с Международным женским днём 💐</p>
-            <div class="flowers-row" id="flowers">
-                <span class="flower-emoji">🌸</span>
-                <span class="flower-emoji">🌷</span>
-                <span class="flower-emoji">🌺</span>
-                <span class="flower-emoji">💐</span>
-                <span class="flower-emoji">🌹</span>
+        <div class="container">
+            <header class="header">
+                <h1>С 8 марта!</h1>
+                <p class="subtitle">Поздравляю с Международным женским днём 💐</p>
+                <div class="flowers-row" id="flowers">
+                    <span class="flower-emoji">🌸</span>
+                    <span class="flower-emoji">🌷</span>
+                    <span class="flower-emoji">🌺</span>
+                    <span class="flower-emoji">💐</span>
+                    <span class="flower-emoji">🌹</span>
+                </div>
+            </header>
+
+            <div class="poetry-card poetry-card-visible">
+                <p>Пусть весна принесёт счастье,<br>
+                Улыбки, любовь и теплоту.<br>
+                Пусть сбудутся все твои мечты<br>
+                В этот светлый день — 8 марта! ✨</p>
             </div>
-        </header>
 
-        <div class="poetry-card poetry-card-visible">
-            <p>Пусть весна принесёт тебе счастье,<br>
-            Улыбки, любовь и теплоту.<br>
-            Пусть сбудутся все твои мечты<br>
-            В этот светлый день — 8 марта! ✨</p>
-        </div>
-
-        <!-- Галерея -->
-        <h2 class="section-title">Галерея</h2>
-        <div class="gallery" id="gallery">
-            <img src="https://picsum.photos/id/1/400/300" alt="Цветы 1" class="gallery-img">
-            <img src="https://picsum.photos/id/10/400/300" alt="Цветы 2" class="gallery-img">
-            <img src="https://picsum.photos/id/100/400/300" alt="Цветы 3" class="gallery-img">
-            <img src="https://picsum.photos/id/101/400/300" alt="Цветы 4" class="gallery-img">
-            <img src="https://picsum.photos/id/102/400/300" alt="Цветы 5" class="gallery-img">
-        </div>
-
-        <!-- Кнопка сюрприза -->
-        <div class="surprise-wrap">
-            <button type="button" class="btn btn-primary btn-surprise" id="btn-surprise">Нажмите здесь!</button>
-            <p class="surprise-message" id="surprise-message" aria-live="polite"></p>
-        </div>
-
-        <h2 class="section-title">Мини-игры</h2>
-        <div class="games-grid">
-            <div class="game-card" data-game="memory">
-                <div class="icon">🧠</div>
-                <h3>Найди пару</h3>
-                <p>Запомни и открой парные карточки с цветами</p>
+            <!-- Кнопка сюрприза -->
+            <div class="surprise-wrap">
+                <button type="button" class="btn btn-primary btn-surprise" id="btn-surprise">Нажмите здесь!</button>
+                <p class="surprise-message" id="surprise-message" aria-live="polite"></p>
             </div>
-            <div class="game-card" data-game="catch">
-                <div class="icon">💕</div>
-                <h3>Лови сердечки</h3>
-                <p>Собери как можно больше падающих сердец</p>
-            </div>
-            <div class="game-card" data-game="quiz">
-                <div class="icon">❓</div>
-                <h3>Викторина</h3>
-                <p>Проверь свои знания о цветах</p>
-            </div>
-        </div>
 
-        <footer class="footer">
-            С любовью, Ислам.
-        </footer>
-    </div>
+            <h2 class="section-title">Мини-квест</h2>
+            <div class="quest-start">
+                <button type="button" class="btn btn-primary btn-quest-start" id="quest-start">Начать</button>
+                <div class="quest-first-step">
+                    <h3 class="quest-step-title">Найди пару</h3>
+                    <p class="quest-step-desc">Запомни и открой парные карточки с цветами.</p>
+                </div>
+            </div>
+
+            <footer class="footer">
+                С любовью, Ислам.
+            </footer>
+        </div>
     </main>
-
-    <!-- Лайтбокс галереи -->
-    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Увеличенное фото">
-        <button type="button" class="lightbox-close" id="lightbox-close">×</button>
-        <img src="" alt="" class="lightbox-img" id="lightbox-img">
-    </div>
 
     <!-- Memory Game Modal -->
     <div class="modal-overlay" id="modal-memory">
@@ -96,11 +70,18 @@
                 <button class="close-btn" type="button" aria-label="Закрыть">×</button>
             </div>
             <p class="game-instruction">Откройте две карточки. Если символы совпадут — пара найдена. Найдите все пары за меньше ходов.</p>
-            <div class="memory-score-wrap">
-                <span class="memory-score" id="memory-score">Ходов: 0</span>
-                <button type="button" class="btn btn-secondary btn-memory-restart" id="memory-restart" style="display:none;">Играть снова</button>
+            <div class="memory-play" id="memory-play">
+                <div class="memory-score-wrap">
+                    <span class="memory-score" id="memory-score">Ходов: 0</span>
+                </div>
+                <div class="memory-grid" id="memory-grid"></div>
             </div>
-            <div class="memory-grid" id="memory-grid"></div>
+            <div class="game-win memory-win" id="memory-win" style="display:none;">
+                <p class="game-win-msg">💐 Вы нашли все пары! Пусть в жизни ваших дней всегда будет гармония, а радость и любовь всегда идут парами.</p>
+                <p class="memory-moves" id="memory-moves"></p>
+                <p class="game-progress-text" id="memory-progress">Игра 1 из 3</p>
+                <button type="button" class="btn btn-primary btn-next-game" id="memory-next">Следующая игра →</button>
+            </div>
         </div>
     </div>
 
@@ -111,18 +92,30 @@
                 <h2>💕 Лови сердечки</h2>
                 <button class="close-btn" type="button" aria-label="Закрыть">×</button>
             </div>
-            <p class="game-instruction">Нажмите «Начать» и двигайте корзинку мышью или пальцем — поймайте падающие сердечки.</p>
-            <div class="catch-score-wrap">
-                <span class="catch-score" id="catch-score">Счёт: 0</span>
-            </div>
-            <div class="catch-game">
-                <div class="catch-area" id="catch-area">
-                    <div class="catch-placeholder" id="catch-placeholder">Нажмите «Начать»</div>
+            <p class="game-instruction">У вас 3 жизни. Поймайте 51 сердечко в корзинку. Каждое непойманное сердечко — минус жизнь.</p>
+            <div class="catch-play" id="catch-play">
+                <div class="catch-stats">
+                    <span class="catch-lives" id="catch-lives">Жизни: ❤️❤️❤️</span>
+                    <span class="catch-score" id="catch-score">Счёт: 0 / 51</span>
+                </div>
+                <div class="catch-game">
+                    <div class="catch-area" id="catch-area">
+                        <div class="catch-placeholder" id="catch-placeholder">Нажмите «Начать»</div>
+                    </div>
+                </div>
+                <div class="catch-controls">
+                    <button class="btn btn-primary" id="catch-start">Начать</button>
+                    <button class="btn btn-primary btn-stop" id="catch-stop" disabled>Стоп</button>
                 </div>
             </div>
-            <div class="catch-controls">
-                <button class="btn btn-primary" id="catch-start">Начать</button>
-                <button class="btn btn-primary btn-stop" id="catch-stop" disabled>Стоп</button>
+            <div class="game-win catch-win" id="catch-win" style="display:none;">
+                <p class="game-win-msg">❤️ Вы поймали столько любви! Пусть любовь, забота и тепло окружают вас каждый день, а сердце всегда будет полным счастья.</p>
+                <p class="game-progress-text" id="catch-progress">Игра 2 из 3</p>
+                <button type="button" class="btn btn-primary btn-next-game" id="catch-next">Следующая игра →</button>
+            </div>
+            <div class="game-win catch-lose" id="catch-lose" style="display:none;">
+                <p class="game-win-msg">Жизни закончились.<br>Попробуйте ещё раз!</p>
+                <button type="button" class="btn btn-primary" id="catch-retry">Попробовать снова</button>
             </div>
         </div>
     </div>
@@ -134,11 +127,26 @@
                 <h2>❓ Викторина о цветах</h2>
                 <button class="close-btn" type="button" aria-label="Закрыть">×</button>
             </div>
-            <p class="game-instruction">Выберите один ответ на каждый вопрос. Зелёный — верно, красный — неверно.</p>
-            <div class="quiz-progress" id="quiz-progress"></div>
-            <div id="quiz-content">
-                <div class="quiz-question" id="quiz-question"></div>
-                <div id="quiz-options"></div>
+            <p class="game-instruction">Выберите один ответ на каждый вопрос. Цель — набрать хотя бы 8 из 10 баллов.</p>
+            <div class="quiz-play" id="quiz-play">
+                <div class="quiz-progress" id="quiz-progress"></div>
+                <div id="quiz-content">
+                    <div class="quiz-question" id="quiz-question"></div>
+                    <div id="quiz-options"></div>
+                </div>
+            </div>
+            <div class="game-win quiz-final" id="quiz-final" style="display:none;">
+                <p class="quiz-final-intro" id="quiz-final-intro"></p>
+                <p class="quiz-final-title">С 8 марта! 🌸</p>
+                <p class="quiz-final-text">Спасибо вам за любовь, заботу и поддержку.<br>Пусть каждый день приносит радость и улыбки.</p>
+                <p class="quiz-final-sign">С любовью, Ислам ❤️</p>
+                <p class="game-progress-text">3 из 3 игр завершено</p>
+                <button type="button" class="btn btn-primary btn-restart" id="quiz-restart">Начать заново</button>
+            </div>
+            <div class="game-win quiz-retry" id="quiz-retry" style="display:none;">
+                <p class="game-win-msg">Цель — 8 из 10 баллов.<br>Попробуйте ещё раз!</p>
+                <p class="quiz-retry-score" id="quiz-retry-score"></p>
+                <button type="button" class="btn btn-primary" id="quiz-retry-btn">Попробовать снова</button>
             </div>
             <div class="quiz-result" id="quiz-result" style="display:none;"></div>
         </div>
