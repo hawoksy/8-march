@@ -26,6 +26,13 @@
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-soft: cubic-bezier(0.45, 0, 0.15, 1);
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Отступы для единообразия */
+    --space-xs: 8px;
+    --space-sm: 16px;
+    --space-md: 24px;
+    --space-lg: 32px;
+    --space-xl: 40px;
+    --space-2xl: 48px;
 }
 
 /* ============================================
@@ -44,9 +51,10 @@ html {
 }
 
 body {
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 400;
     line-height: 1.6;
+    letter-spacing: 0.01em;
     background: var(--cream);
     background-image:
         radial-gradient(ellipse 140% 100% at 50% -30%, rgba(253, 164, 175, 0.35) 0%, transparent 55%),
@@ -100,7 +108,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 24px;
+    padding: var(--space-md);
     background:
         radial-gradient(ellipse 120% 70% at 50% 15%, rgba(255, 241, 242, 0.95) 0%, transparent 55%),
         radial-gradient(ellipse 90% 60% at 50% 85%, rgba(254, 205, 211, 0.5) 0%, transparent 50%),
@@ -161,7 +169,7 @@ body {
     display: block;
     width: 60px;
     height: 4px;
-    margin: 16px auto 0;
+    margin: var(--space-sm) auto 0;
     background: linear-gradient(90deg, transparent, var(--rose-400), var(--pink-500), transparent);
     border-radius: var(--radius-full);
     opacity: 0.8;
@@ -172,12 +180,12 @@ body {
     font-weight: 400;
     color: var(--text-soft);
     letter-spacing: 0.02em;
-    margin-bottom: 48px;
+    margin-bottom: var(--space-2xl);
     animation: fadeInUp 0.9s var(--ease-out) 0.15s both;
 }
 
 .btn-open {
-    padding: 20px 44px;
+    padding: var(--space-md) var(--space-xl);
     font-size: 1.08rem;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -234,13 +242,13 @@ body {
     z-index: 1;
     max-width: 480px;
     margin: 0 auto;
-    padding: 24px;
+    padding: var(--space-md) var(--space-sm);
 }
 
 /* Шапка основного контента */
 .header {
     text-align: center;
-    padding: 44px 20px 32px;
+    padding: var(--space-xl) var(--space-sm) var(--space-lg);
 }
 
 .header h1 {
@@ -252,7 +260,7 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 10px;
+    margin-bottom: var(--space-sm);
     animation: fadeInDown 1s var(--ease-out);
     filter: drop-shadow(0 2px 12px rgba(244, 63, 94, 0.12));
 }
@@ -267,8 +275,8 @@ body {
 .flowers-row {
     display: flex;
     justify-content: center;
-    gap: 18px;
-    margin: 28px 0;
+    gap: var(--space-md);
+    margin: var(--space-lg) 0;
     flex-wrap: wrap;
     animation: fadeIn 1s var(--ease-out) 0.4s both;
 }
@@ -302,7 +310,7 @@ body {
     font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--rose-700);
-    margin: 40px 0 20px;
+    margin: var(--space-xl) 0 var(--space-sm);
     text-align: center;
     position: relative;
     display: inline-block;
@@ -314,71 +322,46 @@ body {
     display: block;
     width: 48px;
     height: 3px;
-    margin: 12px auto 0;
+    margin: var(--space-sm) auto 0;
     background: linear-gradient(90deg, var(--rose-300), var(--pink-500));
     border-radius: var(--radius-full);
     opacity: 0.9;
 }
 
-.games-grid {
-    display: grid;
-    gap: 16px;
-    margin-bottom: 44px;
-}
-
-.game-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 245, 250, 0.7) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: var(--radius-md);
-    padding: 28px 24px;
-    box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(253, 164, 175, 0.4);
-    transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), border-color 0.3s ease;
-    cursor: pointer;
+/* Мини-квест: одна кнопка и первый шаг */
+.quest-start {
     text-align: center;
-    position: relative;
-    overflow: hidden;
+    margin-bottom: var(--space-2xl);
 }
 
-.game-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--rose-300), var(--pink-500), transparent);
-    opacity: 0.6;
+.btn-quest-start {
+    padding: var(--space-md) var(--space-xl);
+    font-size: 1.1rem;
+    margin-bottom: var(--space-md);
 }
 
-.game-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-card), 0 0 0 1px rgba(253, 164, 175, 0.2);
-    border-color: rgba(253, 164, 175, 0.65);
+.quest-first-step {
+    max-width: 320px;
+    margin: 0 auto;
+    padding: var(--space-md) var(--space-lg);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 245, 250, 0.6) 100%);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(253, 164, 175, 0.4);
+    box-shadow: var(--shadow-soft);
 }
 
-.game-card:active {
-    transform: translateY(-3px) scale(0.99);
-}
-
-.game-card .icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-    filter: drop-shadow(0 2px 4px rgba(244, 63, 94, 0.15));
-}
-
-.game-card h3 {
-    font-size: 1.12rem;
+.quest-step-title {
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--rose-700);
-    margin-bottom: 6px;
+    margin-bottom: var(--space-xs);
 }
 
-.game-card p {
-    font-size: 0.9rem;
+.quest-step-desc {
+    font-size: 0.95rem;
     color: var(--text-soft);
     font-weight: 500;
+    line-height: 1.5;
 }
 
 /* Модальные окна (игры) — мягкий оверлей */
@@ -389,7 +372,7 @@ body {
     z-index: 100;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: var(--space-md);
     overflow-y: auto;
     background: rgba(255, 245, 250, 0.92);
     backdrop-filter: blur(8px);
@@ -404,7 +387,7 @@ body {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 252, 0.97) 100%);
     backdrop-filter: blur(24px);
     border-radius: var(--radius-lg);
-    padding: 28px;
+    padding: var(--space-lg);
     max-width: 400px;
     width: 100%;
     box-shadow: var(--shadow-hover), inset 0 1px 0 rgba(255, 255, 255, 0.9);
@@ -415,7 +398,7 @@ body {
 @keyframes modalIn {
     from {
         opacity: 0;
-        transform: scale(0.96) translateY(16px);
+        transform: scale(0.96) translateY(var(--space-sm));
     }
     to {
         opacity: 1;
@@ -427,7 +410,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: var(--space-md);
 }
 
 .modal-header h2 {
@@ -446,6 +429,9 @@ body {
     color: var(--rose-600);
     font-size: 1.25rem;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: background 0.3s var(--ease-out), transform 0.3s var(--ease-out);
 }
 
@@ -453,6 +439,80 @@ body {
     background: var(--rose-300);
     color: var(--rose-700);
     transform: scale(1.05);
+}
+
+/* Финальные экраны игр (победа → следующая игра) */
+.game-win {
+    text-align: center;
+    padding: var(--space-lg) var(--space-sm);
+    animation: modalIn 0.5s var(--ease-out);
+}
+
+.game-win-msg {
+    font-size: 1.15rem;
+    line-height: 1.65;
+    color: var(--text-dark);
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+}
+
+.memory-moves {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--rose-700);
+    margin-bottom: var(--space-sm);
+}
+
+.game-progress-text {
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+}
+
+.btn-next-game {
+    margin-top: var(--space-xs);
+}
+
+/* Финальный экран викторины (полное поздравление) */
+.quiz-final {
+    background: linear-gradient(180deg, rgba(255, 245, 250, 0.6) 0%, rgba(254, 205, 211, 0.25) 100%);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg) var(--space-md);
+}
+
+.quiz-final-intro {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin-bottom: var(--space-md);
+    font-weight: 500;
+}
+
+.quiz-final-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--rose-700);
+    margin-bottom: var(--space-sm);
+}
+
+.quiz-final-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-dark);
+    margin-bottom: var(--space-sm);
+}
+
+.quiz-final-sign {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--rose-600);
+    margin-bottom: var(--space-md);
+}
+
+.btn-restart {
+    margin-top: var(--space-xs);
 }
 
 /* Общее: инструкции и контент игр */
@@ -463,9 +523,9 @@ body {
 .game-instruction {
     font-size: 0.9rem;
     color: var(--text-soft);
-    line-height: 1.5;
-    margin-bottom: 14px;
-    padding: 0 2px;
+    line-height: 1.55;
+    margin-bottom: var(--space-sm);
+    padding: 0 var(--space-xs);
 }
 
 /* Игра «Найди пару» */
@@ -473,9 +533,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: var(--space-sm);
     flex-wrap: wrap;
-    margin-bottom: 12px;
+    margin-bottom: var(--space-sm);
 }
 
 .memory-score {
@@ -485,14 +545,14 @@ body {
 }
 
 .btn-memory-restart {
-    padding: 8px 18px;
+    padding: var(--space-xs) var(--space-md);
     font-size: 0.9rem;
 }
 
 .memory-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: var(--space-sm);
     margin: 0;
 }
 
@@ -559,8 +619,34 @@ body {
 }
 
 /* Игра «Лови сердечки» */
-.catch-score-wrap {
-    margin-bottom: 10px;
+.catch-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.catch-lives {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--rose-700);
+}
+
+.catch-lose .game-win-msg {
+    margin-bottom: var(--space-md);
+}
+
+.quiz-retry .game-win-msg {
+    margin-bottom: var(--space-sm);
+}
+
+.quiz-retry-score {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--rose-700);
+    margin-bottom: var(--space-md);
 }
 
 .catch-placeholder {
@@ -646,16 +732,16 @@ body {
 
 .catch-controls {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
     justify-content: center;
 }
 
 .btn {
-    padding: 14px 28px;
+    padding: var(--space-sm) var(--space-lg);
     border-radius: var(--radius-full);
     border: none;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
@@ -682,9 +768,7 @@ body {
 }
 
 .catch-score {
-    display: block;
-    text-align: center;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--rose-700);
 }
@@ -710,19 +794,19 @@ body {
 .quiz-progress {
     font-size: 0.85rem;
     color: var(--text-soft);
-    margin-bottom: 12px;
+    margin-bottom: var(--space-sm);
     font-weight: 600;
 }
 
 .quiz-option {
     display: block;
     width: 100%;
-    padding: 16px 20px;
-    margin: 10px 0;
+    padding: var(--space-sm) var(--space-md);
+    margin: var(--space-sm) 0;
     border-radius: var(--radius-sm);
     border: 1px solid rgba(253, 164, 175, 0.5);
     background: rgba(255, 255, 255, 0.9);
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
@@ -749,18 +833,18 @@ body {
 .quiz-question {
     font-size: 1.12rem;
     color: var(--text-dark);
-    margin-bottom: 16px;
+    margin-bottom: var(--space-sm);
     font-weight: 600;
-    line-height: 1.45;
+    line-height: 1.5;
     transition: opacity 0.25s ease;
 }
 
 .quiz-result {
     text-align: center;
-    padding: 28px 20px;
+    padding: var(--space-lg) var(--space-md);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-sm);
     align-items: center;
 }
 
@@ -801,13 +885,12 @@ body {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 248, 250, 0.85) 100%);
     backdrop-filter: blur(16px);
     border-radius: var(--radius-md);
-    padding: 32px 28px;
-    margin: 28px 0;
+    padding: var(--space-lg) var(--space-lg);
+    margin: var(--space-lg) 0;
     text-align: center;
     box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(253, 164, 175, 0.45);
     border-left: 5px solid var(--rose-400);
-    box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     opacity: 0;
     transform: translateY(18px);
     transition: opacity 0.65s var(--ease-out) 0.2s, transform 0.65s var(--ease-out) 0.2s;
@@ -817,8 +900,8 @@ body {
 .poetry-card::before {
     content: '"';
     position: absolute;
-    top: 12px;
-    left: 20px;
+    top: var(--space-sm);
+    left: var(--space-md);
     font-family: 'Cormorant Garamond', serif;
     font-size: 3rem;
     line-height: 1;
@@ -833,88 +916,10 @@ body {
 .poetry-card p {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.2rem;
-    line-height: 1.85;
-    letter-spacing: 0.01em;
+    line-height: 1.9;
+    letter-spacing: 0.02em;
     color: var(--text-dark);
     font-style: italic;
-}
-
-/* ============================================
-   Галерея и лайтбокс
-   ============================================ */
-.gallery {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-bottom: 30px;
-    position: relative;
-}
-
-.gallery-img {
-    width: 100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out), filter 0.4s ease;
-    border: 1px solid rgba(253, 164, 175, 0.4);
-    box-shadow: var(--shadow-soft);
-}
-
-.gallery-img:hover {
-    transform: scale(1.04);
-    box-shadow: var(--shadow-card);
-    filter: brightness(1.05) saturate(1.08);
-}
-
-/* Лайтбокс */
-.lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(6px);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.35s var(--ease-out), visibility 0.35s ease;
-}
-
-.lightbox.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.lightbox-img {
-    max-width: 100%;
-    max-height: 90vh;
-    object-fit: contain;
-    border-radius: var(--radius-md);
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
-    animation: modalIn 0.4s var(--ease-out);
-}
-
-.lightbox-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-full);
-    border: none;
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--rose-600);
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: background 0.3s var(--ease-out), transform 0.3s var(--ease-out);
-}
-
-.lightbox-close:hover {
-    background: white;
-    transform: scale(1.08);
 }
 
 /* ============================================
@@ -922,11 +927,11 @@ body {
    ============================================ */
 .surprise-wrap {
     text-align: center;
-    margin-bottom: 35px;
+    margin-bottom: var(--space-xl);
 }
 
 .btn-surprise {
-    margin-bottom: 12px;
+    margin-bottom: var(--space-sm);
 }
 
 .surprise-message {
@@ -946,11 +951,12 @@ body {
    ============================================ */
 .footer {
     text-align: center;
-    padding: 40px 20px;
+    padding: var(--space-2xl) var(--space-md);
     font-size: 0.95rem;
     font-weight: 500;
     color: var(--text-soft);
     letter-spacing: 0.03em;
+    line-height: 1.6;
     position: relative;
 }
 
@@ -959,7 +965,7 @@ body {
     display: block;
     font-size: 1rem;
     color: var(--rose-400);
-    margin-bottom: 8px;
+    margin-bottom: var(--space-xs);
     opacity: 0.9;
 }
 
@@ -1025,14 +1031,9 @@ body {
    Адаптивность (мобильные и планшеты)
    ============================================ */
 @media (min-width: 480px) {
-    .container { padding: 32px; }
-    .memory-grid { gap: 12px; }
+    .container { padding: var(--space-lg); }
+    .memory-grid { gap: var(--space-sm); }
     .memory-card { font-size: 1.8rem; }
-    .gallery { gap: 18px; }
-}
-
-@media (max-width: 360px) {
-    .gallery { grid-template-columns: 1fr; }
 }
 
 /* Поддержка prefers-reduced-motion */
